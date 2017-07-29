@@ -1,32 +1,31 @@
-// required npm packages
-var express = require("express");
-var bodyParser = require("body-parser");
-var methodOverride = require("method-override");
+// require the things
+var express = require('express');
+var methodOverride = require('method-override');
+var bodyParser = require('body-parser');
+var exphbs = require('express-handlebars');
 
-var port = process.env.PORT || 3000;
-
+// set up server
 var app = express();
+var port = process.env.PORT || 3000;
+app.listen(port);
 
-// Serve static content for the app from the "public" directory 
-// in the application directory.
-// app.use(express.static("public"));
+// set up handlebars engine
+app.engine('handlebars', exphbs({
+    defaultLayout: 'main'
+}));
+app.set('view engine', 'handlebars');
+
+// Serve static content for the app from the 'public' directory in the
+// application directory.
 app.use(express.static(__dirname + '/public'));
 
-
-app.use(bodyParser.urlencoded({ extended: false }));
+// Parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 
 // Override with POST having ?_method=DELETE
-app.use(methodOverride("_method"));
+app.use(methodOverride('_method'));
 
-// Set Handlebars.
-var exphbs = require("express-handlebars");
-
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
-
-// Import routes and give the server access to them.
-var routes = require("./controllers/catsController.js");
-
-app.use("/", routes);
-
-app.listen(port);
+// get them routes
+require('./controllers/burgers_controller.js')(app);
